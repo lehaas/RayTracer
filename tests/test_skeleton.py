@@ -1,6 +1,6 @@
 import pytest
 
-from raytracer.skeleton import fib, main
+from raytracer.main import fib, main
 
 __author__ = "lehaas"
 __copyright__ = "lehaas"
