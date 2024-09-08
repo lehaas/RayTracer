@@ -39,7 +39,7 @@ __copyright__ = "lehaas"
 __license__ = "MIT"
 
 ASPECT_RATIO: Final = 16.0 / 9.0
-IMAGE_W: Final = 400
+IMAGE_W: Final = 200
 
 
 def output_ppm_image(output: io.StringIO) -> None:
@@ -74,7 +74,7 @@ def simple_main():
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     output = sys.stdout
 
@@ -89,14 +89,15 @@ def main():
     viewport_height = 2.0
     viewport_width = viewport_height * image_width / image_height
     camera_center = Point([0, 0, 0])
+    _logger.debug(f"{viewport_height=} {viewport_width=}")
 
     # Calculate viewport vectors along horizontal and vertical edges
     viewport_u = Vector([viewport_width, 0, 0])
     viewport_v = Vector([0, -viewport_height, 0])
 
     # Calculate viewport pixel distances
-    pixel_delta_u = viewport_width / image_width
-    pixel_delta_v = viewport_height / image_height
+    pixel_delta_u = viewport_u / image_width
+    pixel_delta_v = viewport_v / image_height
     _logger.debug(f"{pixel_delta_u=}, {pixel_delta_v=}")
 
     # Calculate location of the upper_left pixel
@@ -111,13 +112,16 @@ def main():
     output.write("255\n")
 
     with logging_redirect_tqdm():
-        for i in trange(image_height):
-            for j in range(image_width):
+        for j in trange(image_height):
+            for i in range(image_width):
                 pixel_center = pixel_00_loc + (i * pixel_delta_u) + (j * pixel_delta_v)
                 ray_direction = pixel_center - camera_center
                 r = Ray(camera_center, ray_direction)
+                c = color.color_ray(r)
 
-                color.write_color(output, color.color_ray(r))
+                _logger.debug(f"{i=} {j=} {ray_direction=}, {c=}")
+
+                color.write_color(output, c)
 
     _logger.info("Done.")
 
