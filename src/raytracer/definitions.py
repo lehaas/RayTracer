@@ -1,10 +1,4 @@
-"""General definitions used throughout the project.
-
-TODO:
-- refactor Vector
-    - is there a way to just type a 3-dimensional numpy array?
-    - how to define a low-level wrapper of numpy arrays, that still allows all operations?
-"""
+"""General definitions used throughout the project."""
 
 import numpy as np
 from typing import NewType, TypeVar
