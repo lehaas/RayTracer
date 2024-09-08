@@ -23,13 +23,14 @@ References:
 import io
 import logging
 import sys
-from typing import Final
+from typing import Callable, Final
 
 from tqdm import trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
-from raytracer import color
-from raytracer.definitions import Color, Point, Vector
+from raytracer.color import write_color, color_ray
+from raytracer.camera import Camera
+from raytracer.definitions import Color, Point
 from raytracer.ray import Ray
 
 _logger = logging.getLogger(__name__)
@@ -42,35 +43,57 @@ ASPECT_RATIO: Final = 16.0 / 9.0
 IMAGE_W: Final = 200
 
 
-def output_ppm_image(output: io.StringIO) -> None:
-    IMAGE_H: Final = 256
-    IMAGE_W: Final = 256
+# def output_ppm_image(output: io.StringIO) -> None:
+#     IMAGE_H: Final = 256
+#     IMAGE_W: Final = 256
 
-    """Output a simple ppm image."""
+#     """Output a simple ppm image."""
+#     output.write("P3\n")
+#     output.write(f"{IMAGE_W} {IMAGE_H}\n")
+#     output.write("255\n")
+
+#     with logging_redirect_tqdm():
+#         for i in trange(IMAGE_H):
+#             for j in range(IMAGE_W):
+#                 pixel_color = Color(
+#                     [float(j) / (IMAGE_W - 1), float(i) / (IMAGE_H - 1), 0.0]
+#                 )
+
+#                 color.write_color(output, pixel_color)
+
+#     _logger.info("Done.")
+
+
+# def simple_main():
+#     # TODO: to enable the console_script, a callable needs to be provided.
+#     # but having the logging config in a method is great in case main gets called multiple times.
+#     logging.basicConfig(level=logging.INFO)
+
+#     output = io.StringIO()
+#     output_ppm_image(sys.stdout)
+#     output.close()
+
+
+def output_ppm(
+    output: io.StringIO, height: int, width: int, func: Callable[[int, int], Color]
+) -> None:
+    """Write a valid ppm to output applying func to compute every pixel color.
+
+    TODO:
+    - make write_color injectable to ease testing.
+    """
+
     output.write("P3\n")
-    output.write(f"{IMAGE_W} {IMAGE_H}\n")
+    output.write(f"{width} {height}\n")
     output.write("255\n")
 
     with logging_redirect_tqdm():
-        for i in trange(IMAGE_H):
-            for j in range(IMAGE_W):
-                pixel_color = Color(
-                    [float(j) / (IMAGE_W - 1), float(i) / (IMAGE_H - 1), 0.0]
-                )
+        for r in trange(height):
+            for c in range(width):
+                color = func(c, r)
+                _logger.debug(f"{c=} {r=}: {color=}")
 
-                color.write_color(output, pixel_color)
-
-    _logger.info("Done.")
-
-
-def simple_main():
-    # TODO: to enable the console_script, a callable needs to be provided.
-    # but having the logging config in a method is great in case main gets called multiple times.
-    logging.basicConfig(level=logging.INFO)
-
-    output = io.StringIO()
-    output_ppm_image(sys.stdout)
-    output.close()
+                write_color(output, color)
 
 
 def main():
@@ -85,43 +108,31 @@ def main():
     assert image_height >= 1
 
     # Camera
-    focal_length = 1.0
     viewport_height = 2.0
-    viewport_width = viewport_height * image_width / image_height
-    camera_center = Point([0, 0, 0])
-    _logger.debug(f"{viewport_height=} {viewport_width=}")
-
-    # Calculate viewport vectors along horizontal and vertical edges
-    viewport_u = Vector([viewport_width, 0, 0])
-    viewport_v = Vector([0, -viewport_height, 0])
+    camera = Camera(
+        focal_length=1.0,
+        viewport_height=viewport_height,
+        viewport_width=viewport_height * image_width / image_height,
+        center=Point([0, 0, 0]),
+    )
+    _logger.debug(f"{camera=}")
 
     # Calculate viewport pixel distances
-    pixel_delta_u = viewport_u / image_width
-    pixel_delta_v = viewport_v / image_height
+    pixel_delta_u = camera.viewport_u / image_width
+    pixel_delta_v = camera.viewport_v / image_height
     _logger.debug(f"{pixel_delta_u=}, {pixel_delta_v=}")
 
     # Calculate location of the upper_left pixel
-    viewport_upper_left = (
-        camera_center - Vector([0, 0, focal_length]) - viewport_u / 2 - viewport_v / 2
-    )
-    pixel_00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v)
-    _logger.debug(f"{viewport_upper_left=}, {pixel_00_loc=}")
+    pixel_00_loc = camera.viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v)
+    _logger.debug(f"{camera.viewport_upper_left=}, {pixel_00_loc=}")
 
-    output.write("P3\n")
-    output.write(f"{image_width} {image_height}\n")
-    output.write("255\n")
+    def compute_color(i, j):
+        pixel_center = pixel_00_loc + (i * pixel_delta_u) + (j * pixel_delta_v)
+        ray_direction = pixel_center - camera.center
+        r = Ray(camera.center, ray_direction)
+        return color_ray(r)
 
-    with logging_redirect_tqdm():
-        for j in trange(image_height):
-            for i in range(image_width):
-                pixel_center = pixel_00_loc + (i * pixel_delta_u) + (j * pixel_delta_v)
-                ray_direction = pixel_center - camera_center
-                r = Ray(camera_center, ray_direction)
-                c = color.color_ray(r)
-
-                _logger.debug(f"{i=} {j=} {ray_direction=}, {c=}")
-
-                color.write_color(output, c)
+    output_ppm(output, image_height, image_width, compute_color)
 
     _logger.info("Done.")
 
