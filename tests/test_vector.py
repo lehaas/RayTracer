@@ -29,6 +29,7 @@ def test_wrong_shape():
 def test_xyz():
     """Test that x, y, and z return the correct values."""
     v = Vector([1, 2, 3])
+
     assert v.x == 1
     assert v.y == 2
     assert v.z == 3
@@ -39,7 +40,6 @@ def test_xyz():
     [
         (Vector([3, 0, 0]), Vector([1, 0, 0])),
         (Vector([2, 2, 2]), Vector([1 / np.sqrt(3), 1 / np.sqrt(3), 1 / np.sqrt(3)])),
-        (Vector([3, 0, 0]), Vector([1, 0, 0])),
     ],
 )
 def test_unit_vector(_in: Vector, out: Vector):
