@@ -6,7 +6,7 @@ from typing import NewType, TypeVar
 T = TypeVar("T", bound=np.generic)
 
 
-class Vector(np.ndarray):
+class Vector(np.ndarray[T]):
     """Implementation of a 3 dimensional vector wrapping numpy."""
 
     def __new__(cls, *args, **kwargs):
@@ -26,6 +26,23 @@ class Vector(np.ndarray):
             raise ValueError(
                 f"Array must be a vector with 3 entries but {self.shape=}."
             )
+
+    @property
+    def x(self) -> T:
+        return self[0]
+
+    @property
+    def y(self) -> T:
+        return self[1]
+
+    @property
+    def z(self) -> T:
+        return self[2]
+
+
+def unit_vector(v: Vector) -> Vector:
+    """Returns a unit vector with the same direction."""
+    return v / np.linalg.norm(v)
 
 
 Point = NewType("Point", Vector)

@@ -73,11 +73,9 @@ def simple_main():
     output.close()
 
 
-def color_ray(ray: Ray) -> Color:
-    return Color([0.5, 0.5, 0.5])
-
-
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+
     output = sys.stdout
 
     # Image properties
@@ -119,7 +117,7 @@ def main():
                 ray_direction = pixel_center - camera_center
                 r = Ray(camera_center, ray_direction)
 
-                color.write_color(output, color_ray(r))
+                color.write_color(output, color.color_ray(r))
 
     _logger.info("Done.")
 

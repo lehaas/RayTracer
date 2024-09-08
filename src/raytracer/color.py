@@ -1,7 +1,8 @@
 import io
 
 
-from raytracer.definitions import Color
+from raytracer.definitions import Color, Vector, unit_vector
+from raytracer.ray import Ray
 
 
 def write_color(out: io.StringIO, pixel_color: Color) -> None:
@@ -18,3 +19,13 @@ def write_color(out: io.StringIO, pixel_color: Color) -> None:
     r, g, b = pixel_color
 
     out.write(f"{int(255.999 * r)} {int(255.999 * g)} {int(255.999 * b)}\n")
+
+
+WHITE = Color(Vector([1.0, 1.0, 1.0]))
+BLUE = Color(Vector([0.5, 0.7, 1.0]))
+
+
+def color_ray(ray: Ray) -> Color:
+    v = unit_vector(ray.dir)
+    a = 0.5 * (v.y + 1.0)
+    return (1.0 - a) * WHITE + a * BLUE
