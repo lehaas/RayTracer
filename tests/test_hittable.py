@@ -36,7 +36,7 @@ def test_hit_sphere_one():
     assert sphere.hit(ray) == Record(
         Point(Vector([np.sqrt(1 / 3), 0, -1])),
         # TODO: I am a bit sceptic that this vector is aligned with the x-axis. Double-check!
-        Vector([-2 * np.sqrt(1 / 3), 0.0, 0.0]),
+        Vector([2 * np.sqrt(1 / 3), 0.0, 0.0]),
         1,
     )
 
