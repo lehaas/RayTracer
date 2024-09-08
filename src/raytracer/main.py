@@ -40,7 +40,7 @@ __copyright__ = "lehaas"
 __license__ = "MIT"
 
 ASPECT_RATIO: Final = 16.0 / 9.0
-IMAGE_W: Final = 200
+IMAGE_W: Final = 400
 
 
 # def output_ppm_image(output: io.StringIO) -> None:

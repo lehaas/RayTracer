@@ -1,4 +1,5 @@
 import io
+from typing import Optional
 
 import numpy as np
 
@@ -27,8 +28,8 @@ WHITE = Color(Vector([1.0, 1.0, 1.0]))
 BLUE = Color(Vector([0.5, 0.7, 1.0]))
 
 
-def hit_sphere(center: Point, radius: float, ray: Ray) -> bool:
-    """Returns True if and only if the ray hits the sphere in one or more points.
+def hit_sphere_at(center: Point, radius: float, ray: Ray) -> Optional[float]:
+    """Returns the distance to the sphere or None if there is no intersection.
 
     TODO: currently spheres in front and behind the camera are hit.
     """
@@ -37,12 +38,20 @@ def hit_sphere(center: Point, radius: float, ray: Ray) -> bool:
     b = -2 * np.dot(ray.dir, oc)
     c = np.dot(oc, oc) - radius**2
     discriminant = b**2 - 4 * a * c
-    return discriminant >= 0
+
+    if discriminant >= 0:
+        return (-b - np.sqrt(discriminant)) / (2 * a)
+    else:
+        return None
 
 
 def color_ray(ray: Ray) -> Color:
-    if hit_sphere(Point(Vector([0, 0, -1])), 0.5, ray):
-        return Color(Vector([1, 0, 0]))
+    center = Point(Vector([0, 0, -1]))
+    if d := hit_sphere_at(center, 0.5, ray):
+        # compute the distance from center to hit point
+        v = unit_vector(ray.at(d) - center)
+        # v is in [-1, 1]: scale it to [0, 1]
+        return Color(0.5 * (v + 1))
     v = unit_vector(ray.dir)
     a = 0.5 * (v.y + 1.0)
     return (1.0 - a) * WHITE + a * BLUE
