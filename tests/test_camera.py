@@ -10,4 +10,5 @@ def test_simple():
 
     np.testing.assert_equal(camera.viewport_u, Vector([viewport_width, 0, 0]))
     np.testing.assert_equal(camera.viewport_v, Vector([0, -viewport_height, 0]))
+    # TODO: why is this vector not (-6, 5, 1)?
     np.testing.assert_equal(camera.viewport_upper_left, Vector([-6, 5, -1]))

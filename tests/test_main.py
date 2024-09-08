@@ -8,7 +8,7 @@ def test_output_ppm():
     out = io.StringIO()
     output_ppm(out, height=1, width=2, func=lambda i, j: Color(Vector([0, 0, 0])))
 
-    assert out.getvalue() == f"P3\n2 1\n255\n{0} {0} {0}\n{0} {0} {0}"
+    assert out.getvalue() == f"P3\n2 1\n255\n{0} {0} {0}\n{0} {0} {0}\n"
 
 
 def test_output_ppm_w_function():
