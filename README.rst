@@ -33,11 +33,7 @@
 raytracer
 =========
 
-
-    Add a short description here!
-
-
-A longer description of your project goes here...
+   Python implementation of a ray tracer following https://raytracing.github.io/books/RayTracingInOneWeekend.html.
 
 
 .. _pyscaffold-notes:
