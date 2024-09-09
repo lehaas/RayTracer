@@ -47,25 +47,21 @@ class Sphere(Hittable):
         self.center = center
         self.radius = radius
 
-    def hit(
-        self, ray: Ray, ray_tmin: float = 0.0, ray_tmax: float = 1.0
-    ) -> Optional[Record]:
+    def hit(self, ray: Ray, t_min: float = 0.0, t_max: float = 1.0) -> Optional[Record]:
         """Returns the distance to the sphere or None if there is no intersection.
 
         TODO: currently spheres in front and behind the camera are hit.
         """
-        oc = self.center - ray.orig
-        a = np.linalg.norm(ray.direction) ** 2
-        h = np.dot(ray.direction, oc)
-        c = np.linalg.norm(oc) ** 2 - self.radius**2
-        discriminant = h * h - a * c
+        a, h, discriminant = self._compute_discriminant(ray)
 
         if discriminant < 0:
             return False
 
-        # TODO: use t_min and t_max to compute an approximated normal. Don't see the use of it right now.
+        t = self._compute_closest_root(a, h, discriminant, t_min, t_max)
 
-        t = (h - np.sqrt(discriminant)) / a
+        if not t:
+            return False
+
         p = ray.at(t)
         outward_normal = (p - self.center) / self.radius
         return Record(
@@ -73,7 +69,26 @@ class Sphere(Hittable):
             normal=(
                 outward_normal
                 if is_front_facing(ray, outward_normal)
-                else outward_normal
+                else -outward_normal
             ),
             distance=t,
         )
+
+    def _compute_closest_root(
+        self, a: float, h: float, discriminant: float, t_min: float, t_max: float
+    ) -> Optional[float]:
+        root = (h - np.sqrt(discriminant)) / a
+        if not t_min <= root <= t_max:
+            root = (h - np.sqrt(discriminant)) / a
+            if not t_min <= root <= t_max:
+                return None
+
+        return root
+
+    def _compute_discriminant(self, ray):
+        oc = self.center - ray.orig
+        a = np.linalg.norm(ray.direction) ** 2
+        h = np.dot(ray.direction, oc)
+        c = np.linalg.norm(oc) ** 2 - self.radius**2
+        discriminant = h * h - a * c
+        return a, h, discriminant
