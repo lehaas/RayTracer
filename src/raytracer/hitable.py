@@ -65,7 +65,7 @@ class Sphere(Hittable):
 
         # TODO: use t_min and t_max to compute an approximated normal. Don't see the use of it right now.
 
-        t = h - np.sqrt(discriminant) / a
+        t = (h - np.sqrt(discriminant)) / a
         p = ray.at(t)
         outward_normal = (p - self.center) / self.radius
         return Record(

@@ -22,9 +22,13 @@ def test_hit_sphere_two():
 def test_hit_sphere_one():
     """Test if hit_sphere returns the correct distance for a single hit.
 
-    Solving the equation here:
+    Solving the discriminant described here for zero:
     https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere/ray-sphereintersection
-    for a single intersection returns that at [sqrt(1/3), 0, -1], there is only a single intersection.
+    that [sqrt(1/3), 0, -1] is a single intersection point.
+
+    The intersection distance is 3/4.
+    The intersection point is 3/4 * direction = (3/4 * sqrt(1/3), 0,-3/4).
+    And the normal is ((3/4 * sqrt(1/3), 0, -3/4) - (0, 0, -1)) * 2 = (3/2 * sqrt(1/3), 0, 1/2)
     """
     # GIVEN a point at [0, 0, -1] with radius 0.5
     sphere = Sphere(center=Point(Vector([0, 0, -1])), radius=0.5)
@@ -34,10 +38,9 @@ def test_hit_sphere_one():
 
     # THEN the ray hits the sphere in one location
     assert sphere.hit(ray) == Record(
-        Point(Vector([np.sqrt(1 / 3), 0, -1])),
-        # TODO: I am a bit sceptic that this vector is aligned with the x-axis. Double-check!
-        Vector([2 * np.sqrt(1 / 3), 0.0, 0.0]),
-        1,
+        Point(Vector([3 / 4 * np.sqrt(1 / 3), 0, -0.75])),
+        Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
+        0.75,
     )
 
 
