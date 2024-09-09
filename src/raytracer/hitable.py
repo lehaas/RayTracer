@@ -70,7 +70,6 @@ class Sphere(Hittable):
         outward_normal = (p - self.center) / self.radius
         return Record(
             point=p,
-            # TODO: here is still a bug. Implement a test and check it.
             normal=(
                 outward_normal
                 if is_front_facing(ray, outward_normal)
