@@ -1,8 +1,8 @@
 import numpy as np
 
-from raytracer.definitions import Point, Vector
+from raytracer.definitions.vector import Point, Vector
 from raytracer.hitable import Record, Sphere
-from raytracer.ray import Ray
+from raytracer.definitions.ray import Ray
 
 
 def test_hit_sphere_two():
@@ -19,6 +19,7 @@ def test_hit_sphere_two():
     )
 
 
+# TODO: refactor into test class with single hit-sphere and test t_min + t_max
 def test_hit_sphere_one():
     """Test if hit_sphere returns the correct distance for a single hit.
 

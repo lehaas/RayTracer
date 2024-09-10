@@ -1,5 +1,5 @@
 import numpy as np
-from raytracer.definitions import Vector, unit_vector
+from raytracer.definitions.vector import Vector, unit_vector
 import pytest
 
 

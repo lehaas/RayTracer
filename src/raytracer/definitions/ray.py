@@ -1,4 +1,4 @@
-from raytracer.definitions import Point, Vector
+from raytracer.definitions.vector import Point, Vector
 
 
 class Ray:

@@ -4,8 +4,8 @@ from typing import Optional
 
 import numpy as np
 
-from raytracer.definitions import Point, Vector
-from raytracer.ray import Ray
+from raytracer.definitions.vector import Point, Vector
+from raytracer.definitions.ray import Ray
 
 
 @dataclass
@@ -35,7 +35,7 @@ class Record:
 
 class Hittable(abc.ABC):
     @abc.abstractmethod
-    def hit(self, ray: Ray, ray_tmin: float, ray_tmax: float) -> Optional[Record]:
+    def hit(self, ray: Ray, t_min: float, t_max: float) -> Optional[Record]:
         """Compute the intersection of the ray and the hittable, else return None."""
 
 

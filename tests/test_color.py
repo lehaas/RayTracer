@@ -1,7 +1,7 @@
 from raytracer.color import write_color
 import io
 
-from raytracer.definitions import Color, Vector
+from raytracer.definitions.vector import Color, Vector
 
 
 def test_color():

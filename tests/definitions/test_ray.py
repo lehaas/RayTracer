@@ -1,6 +1,6 @@
 import pytest
-from raytracer.definitions import Point, Vector
-from raytracer.ray import Ray
+from raytracer.definitions.vector import Point, Vector
+from raytracer.definitions.ray import Ray
 
 _ZERO = Vector([0.0, 0.0, 0.0])
 

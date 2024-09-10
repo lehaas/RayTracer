@@ -1,5 +1,5 @@
 import numpy as np
-from raytracer.definitions import Point, Vector
+from raytracer.definitions.vector import Point, Vector
 from raytracer.main import Camera
 
 

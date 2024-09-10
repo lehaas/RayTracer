@@ -1,13 +1,13 @@
 """General definitions used throughout the project."""
 
 import numpy as np
-from typing import NewType, TypeVar
+from typing import Any, NewType, TypeVar
 
 T = TypeVar("T", bound=np.dtype)
 
 
 # TODO: fix typehint for nd array
-class Vector(np.ndarray[T]):
+class Vector(np.ndarray[Any, T]):
     """Implementation of a 3 dimensional vector wrapping numpy."""
 
     def __new__(cls, *args, **kwargs):
@@ -25,7 +25,7 @@ class Vector(np.ndarray[T]):
     def ensure_vector3(self):
         if self.shape != (3,):
             raise ValueError(
-                f"Array must be a vector with 3 entries but {self.shape=}."
+                f"Array must be a vector with 3 entries but {self=}, {self.shape=}."
             )
 
     @property

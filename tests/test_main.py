@@ -1,6 +1,6 @@
 import io
-from raytracer.definitions import Color, Vector
-from raytracer.main import output_ppm
+from raytracer.definitions.vector import Color, Vector
+from raytracer.raytracer import output_ppm
 
 
 def test_output_ppm():

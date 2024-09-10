@@ -20,18 +20,15 @@ References:
     - https://pip.pypa.io/en/stable/reference/pip_install
 """
 
-import io
 import logging
 import sys
-from typing import Callable, Final
+from typing import Final
 
-from tqdm import trange
-from tqdm.contrib.logging import logging_redirect_tqdm
 
-from raytracer.color import write_color, color_ray
-from raytracer.camera import Camera
-from raytracer.definitions import Color, Point
-from raytracer.ray import Ray
+from raytracer.definitions.vector import Point, Vector
+from raytracer.definitions.world import World
+from raytracer.hitable import Sphere
+from raytracer.raytracer import RayTracer
 
 _logger = logging.getLogger(__name__)
 
@@ -74,65 +71,19 @@ IMAGE_W: Final = 400
 #     output.close()
 
 
-def output_ppm(
-    output: io.StringIO, height: int, width: int, func: Callable[[int, int], Color]
-) -> None:
-    """Write a valid ppm to output applying func to compute every pixel color.
-
-    TODO:
-    - make write_color injectable to ease testing.
-    """
-
-    output.write("P3\n")
-    output.write(f"{width} {height}\n")
-    output.write("255\n")
-
-    with logging_redirect_tqdm():
-        for r in trange(height):
-            for c in range(width):
-                color = func(c, r)
-                _logger.debug(f"{c=} {r=}: {color=}")
-
-                write_color(output, color)
-
-
 def main():
     logging.basicConfig(level=logging.INFO)
+
+    world = (
+        World()
+        .add(Sphere(Point(Vector([0, 0, -1])), 0.5))
+        .add(Sphere(Point(Vector([0, -100.5, -1])), 100))
+    )
 
     output = sys.stdout
 
     # Image properties
-    image_width = IMAGE_W
-    image_height = int(image_width / ASPECT_RATIO)
-
-    assert image_height >= 1
-
-    # Camera
-    viewport_height = 2.0
-    camera = Camera(
-        focal_length=1.0,
-        viewport_height=viewport_height,
-        viewport_width=viewport_height * image_width / image_height,
-        center=Point([0, 0, 0]),
-    )
-    _logger.debug(f"{camera=}")
-
-    # Calculate viewport pixel distances
-    pixel_delta_u = camera.viewport_u / image_width
-    pixel_delta_v = camera.viewport_v / image_height
-    _logger.debug(f"{pixel_delta_u=}, {pixel_delta_v=}")
-
-    # Calculate location of the upper_left pixel
-    pixel_00_loc = camera.viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v)
-    _logger.debug(f"{camera.viewport_upper_left=}, {pixel_00_loc=}")
-
-    def compute_color(i, j):
-        pixel_center = pixel_00_loc + (i * pixel_delta_u) + (j * pixel_delta_v)
-        ray_direction = pixel_center - camera.center
-        r = Ray(camera.center, ray_direction)
-        return color_ray(r)
-
-    output_ppm(output, image_height, image_width, compute_color)
+    RayTracer(ASPECT_RATIO, IMAGE_W).render(world, output)
 
     _logger.info("Done.")
 
