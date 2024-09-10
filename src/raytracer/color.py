@@ -31,7 +31,7 @@ def color_ray(ray: Ray) -> Color:
     if record := sphere.hit(ray):
         v = unit_vector(record.normal)
         # v is in [-1, 1]: scale it to [0, 1]
-        return Color(0.5 * (v + 1))
+        return Color(Vector([0.5 * (v + 1)]))
 
     v = unit_vector(ray.direction)
     a = 0.5 * (v.y + 1.0)

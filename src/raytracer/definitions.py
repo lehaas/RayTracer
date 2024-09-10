@@ -3,9 +3,10 @@
 import numpy as np
 from typing import NewType, TypeVar
 
-T = TypeVar("T", bound=np.generic)
+T = TypeVar("T", bound=np.dtype)
 
 
+# TODO: fix typehint for nd array
 class Vector(np.ndarray[T]):
     """Implementation of a 3 dimensional vector wrapping numpy."""
 

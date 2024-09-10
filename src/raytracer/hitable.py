@@ -21,6 +21,7 @@ class Record:
     point: Point
     normal: Vector
     distance: float
+    front_facing: bool
 
     def __eq__(self, other):
         if not isinstance(other, Record):
@@ -55,22 +56,23 @@ class Sphere(Hittable):
         a, h, discriminant = self._compute_discriminant(ray)
 
         if discriminant < 0:
-            return False
+            return None
 
         t = self._compute_closest_root(a, h, discriminant, t_min, t_max)
 
         if not t:
-            return False
+            return None
 
+        return self._compute_record(ray, t)
+
+    def _compute_record(self, ray, t):
         p = ray.at(t)
         outward_normal = (p - self.center) / self.radius
+        front_facing = is_front_facing(ray, outward_normal)
         return Record(
             point=p,
-            normal=(
-                outward_normal
-                if is_front_facing(ray, outward_normal)
-                else -outward_normal
-            ),
+            normal=(1 if front_facing else -1) * outward_normal,
+            front_facing=front_facing,
             distance=t,
         )
 

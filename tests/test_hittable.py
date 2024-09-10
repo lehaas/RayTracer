@@ -15,7 +15,7 @@ def test_hit_sphere_two():
 
     # THEN the ray hits the sphere
     assert sphere.hit(ray) == Record(
-        Point(Vector([0, 0, -0.5])), Vector([0.0, 0.0, 1.0]), 0.5
+        Point(Vector([0, 0, -0.5])), Vector([0.0, 0.0, 1.0]), 0.5, True
     )
 
 
@@ -38,9 +38,10 @@ def test_hit_sphere_one():
 
     # THEN the ray hits the sphere in one location
     assert sphere.hit(ray) == Record(
-        Point(Vector([3 / 4 * np.sqrt(1 / 3), 0, -0.75])),
-        Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
-        0.75,
+        point=Point(Vector([3 / 4 * np.sqrt(1 / 3), 0, -0.75])),
+        normal=Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
+        distance=0.75,
+        front_facing=True,
     )
 
 
@@ -70,6 +71,13 @@ def test_hit_sphere_math():
 
     # THEN the closest_root is computed for t_min, t_max set respectively
     assert sphere._compute_closest_root(a, h, discriminant, 0, 1) == 0.75
+
+    assert sphere._compute_record(ray, 0.75) == Record(
+        point=Point(Vector([3 / 4 * np.sqrt(1 / 3), 0, -0.75])),
+        normal=Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
+        distance=0.75,
+        front_facing=True,
+    )
 
 
 def test_hit_sphere_zero():
