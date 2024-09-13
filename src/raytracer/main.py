@@ -25,7 +25,8 @@ import sys
 from typing import Final
 
 
-from raytracer.definitions.vector import Point, Vector
+from raytracer.definitions.material import Lambertian, Metal
+from raytracer.definitions.vector import Color, Point, Vector
 from raytracer.definitions.world import World
 from raytracer.hitable import Sphere
 from raytracer.raytracer import RayTracer
@@ -37,7 +38,7 @@ __copyright__ = "lehaas"
 __license__ = "MIT"
 
 ASPECT_RATIO: Final = 16.0 / 9.0
-IMAGE_W: Final = 400
+IMAGE_W: Final = 200
 
 
 def main():
@@ -45,8 +46,34 @@ def main():
 
     world = (
         World()
-        .add(Sphere(Point(Vector([0, 0, -1])), 0.5))
-        .add(Sphere(Point(Vector([0, -100.5, -1])), 100))
+        .add(
+            Sphere(
+                Point(Vector([0, 0, -1])),
+                0.5,
+                Lambertian(Color(Vector([0.8, 0.8, 0.0]))),
+            )
+        )
+        .add(
+            Sphere(
+                Point(Vector([0, -100.5, -1])),
+                100,
+                Lambertian(Color(Vector([0.1, 0.2, 0.5]))),
+            )
+        )
+        .add(
+            Sphere(
+                Point(Vector([-1, 0, -1])),
+                0.5,
+                Metal(Color(Vector([0.8, 0.8, 0.8])), fuzz=0.3),
+            )
+        )
+        .add(
+            Sphere(
+                Point(Vector([1, 0, -1])),
+                0.5,
+                Metal(Color(Vector([0.8, 0.6, 0.2])), fuzz=1.0),
+            )
+        )
     )
 
     output = sys.stdout

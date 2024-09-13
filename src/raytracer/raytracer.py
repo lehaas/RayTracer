@@ -43,7 +43,7 @@ class RayTracer:
         self,
         aspect_ratio: float,
         image_width: int,
-        samples_per_pixel: int = 40,
+        samples_per_pixel: int = 50,
         max_recursion_depth: int = 20,
     ):
         """Compute a image with given aspect ratio and image_width.
@@ -130,17 +130,12 @@ def ray_color(ray: Ray, world: World, *, depth: int) -> Color:
 
     # to account for floating point inaccuracies, we ignore small rays that hit its origin
     if record := world.hit(ray, 0.0001, math.inf):
-        # v is in [-1, 1]: scale it to [0, 1]
-        # TODO: Vector should not be required here, but mypy cannot infer the type of 0.5*(v + 1)
-
-        # cheap true Lambertian reflection
-        direction = record.normal + Vector.random_unit_vector()
-
-        # random reflection
-        # direction = Vector.random_on_hemisphere(record.normal)
-
-        return 0.5 * ray_color(Ray(record.point, direction), world, depth=depth - 1)
-
+        material = record.material
+        scattered = material.scatter(ray, record.normal, record.point)
+        if scattered:
+            return material.albedo * ray_color(scattered, world, depth=depth - 1)
+        else:
+            return Color(Vector([0.0, 0.0, 0.0]))
     v = unit_vector(ray.direction)
     a = 0.5 * (v.y + 1.0)
     return (1.0 - a) * WHITE + a * BLUE

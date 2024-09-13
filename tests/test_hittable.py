@@ -15,7 +15,11 @@ def test_hit_sphere_two():
 
     # THEN the ray hits the sphere
     assert sphere.hit(ray) == Record(
-        Point(Vector([0, 0, -0.5])), Vector([0.0, 0.0, 1.0]), 0.5, True
+        Point(Vector([0, 0, -0.5])),
+        Vector([0.0, 0.0, 1.0]),
+        0.5,
+        True,
+        material=sphere.material,
     )
 
 
@@ -43,6 +47,7 @@ def test_hit_sphere_one():
         normal=Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
         distance=0.75,
         front_facing=True,
+        material=sphere.material,
     )
 
 
@@ -78,6 +83,7 @@ def test_hit_sphere_math():
         normal=Vector([3 / 2 * np.sqrt(1 / 3), 0.0, 0.5]),
         distance=0.75,
         front_facing=True,
+        material=sphere.material,
     )
 
 

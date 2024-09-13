@@ -1,36 +1,12 @@
 import abc
-from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
 
-from raytracer.definitions.vector import Point, Vector
+from raytracer.definitions.material import DefaultMaterial, Material
+from raytracer.definitions.vector import Point
 from raytracer.definitions.ray import Ray
-
-
-@dataclass
-class Record:
-    """Record a hit between a hittable and a ray
-
-    Attributes:
-        point: insection point between hittable and ray
-        normal: normal of the hittable and the ray at the intersection point
-        distance: distance from the ray origin to the intersection point
-    """
-
-    point: Point
-    normal: Vector
-    distance: float
-    front_facing: bool
-
-    def __eq__(self, other):
-        if not isinstance(other, Record):
-            return False
-        return (
-            np.array_equal(self.point, other.point)
-            and np.array_equal(self.normal, other.normal)
-            and self.distance == other.distance
-        )
+from raytracer.definitions.hit_record import Record
 
 
 class Hittable(abc.ABC):
@@ -44,9 +20,10 @@ def is_front_facing(ray: Ray, outward_normal):
 
 
 class Sphere(Hittable):
-    def __init__(self, center: Point, radius: float):
+    def __init__(self, center: Point, radius: float, material: Material | None = None):
         self.center = center
         self.radius = radius
+        self.material = material or DefaultMaterial()
 
     def hit(self, ray: Ray, t_min: float = 0.0, t_max: float = 1.0) -> Optional[Record]:
         """Returns the distance to the sphere or None if there is no intersection.
@@ -74,6 +51,7 @@ class Sphere(Hittable):
             normal=(1 if front_facing else -1) * outward_normal,
             front_facing=front_facing,
             distance=t,
+            material=self.material,
         )
 
     def _compute_closest_root(
