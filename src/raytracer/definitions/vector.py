@@ -1,7 +1,9 @@
 """General definitions used throughout the project."""
 
+from __future__ import annotations
+import random
 import numpy as np
-from typing import Any, NewType, TypeVar
+from typing import Any, NewType, Self, TypeVar
 
 T = TypeVar("T", bound=np.dtype)
 
@@ -39,6 +41,35 @@ class Vector(np.ndarray[Any, T]):
     @property
     def z(self) -> T:
         return self[2]
+
+    def length(self) -> float:
+        return np.linalg.norm(self)
+
+    @classmethod
+    def random(cls, lower=0.0, upper=1.0) -> Self:
+        return cls(
+            [
+                random.uniform(lower, upper),
+                random.uniform(lower, upper),
+                random.uniform(lower, upper),
+            ]
+        )
+
+    @classmethod
+    def random_unit_vector(cls) -> Self:
+        while True:
+            p = cls.random(-1, 1)
+            length = p.length()
+            if 10**-100 < length <= 1:
+                return p / length
+
+    @classmethod
+    def random_on_hemisphere(cls, normal: Vector) -> Self:
+        unit_vector = cls.random_unit_vector()
+        if np.dot(unit_vector, normal) < 0.0:
+            return -unit_vector
+        else:
+            return unit_vector
 
 
 def unit_vector(v: Vector) -> Vector:

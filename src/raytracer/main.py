@@ -40,37 +40,6 @@ ASPECT_RATIO: Final = 16.0 / 9.0
 IMAGE_W: Final = 400
 
 
-# def output_ppm_image(output: io.StringIO) -> None:
-#     IMAGE_H: Final = 256
-#     IMAGE_W: Final = 256
-
-#     """Output a simple ppm image."""
-#     output.write("P3\n")
-#     output.write(f"{IMAGE_W} {IMAGE_H}\n")
-#     output.write("255\n")
-
-#     with logging_redirect_tqdm():
-#         for i in trange(IMAGE_H):
-#             for j in range(IMAGE_W):
-#                 pixel_color = Color(
-#                     [float(j) / (IMAGE_W - 1), float(i) / (IMAGE_H - 1), 0.0]
-#                 )
-
-#                 color.write_color(output, pixel_color)
-
-#     _logger.info("Done.")
-
-
-# def simple_main():
-#     # TODO: to enable the console_script, a callable needs to be provided.
-#     # but having the logging config in a method is great in case main gets called multiple times.
-#     logging.basicConfig(level=logging.INFO)
-
-#     output = io.StringIO()
-#     output_ppm_image(sys.stdout)
-#     output.close()
-
-
 def main():
     logging.basicConfig(level=logging.INFO)
 

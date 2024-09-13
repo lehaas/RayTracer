@@ -1,7 +1,20 @@
 import io
 
+import numpy as np
+
 
 from raytracer.definitions.vector import Color
+
+
+X_MAX = 0.9999
+X_MIN = 0.0000
+MAX_BYTE = 256
+
+
+def linear_to_gamma(linear_comp: float) -> float:
+    if linear_comp > 0:
+        return np.sqrt(linear_comp)
+    return 0
 
 
 def write_color(out: io.StringIO, pixel_color: Color) -> None:
@@ -17,4 +30,16 @@ def write_color(out: io.StringIO, pixel_color: Color) -> None:
 
     r, g, b = pixel_color
 
-    out.write(f"{int(255.999 * r)} {int(255.999 * g)} {int(255.999 * b)}\n")
+    r = linear_to_gamma(r)
+    g = linear_to_gamma(g)
+    b = linear_to_gamma(b)
+
+    r_byte = int(MAX_BYTE * clamp(r, X_MIN, X_MAX))
+    g_byte = int(MAX_BYTE * clamp(g, X_MIN, X_MAX))
+    b_byte = int(MAX_BYTE * clamp(b, X_MIN, X_MAX))
+
+    out.write(f"{r_byte} {g_byte} {b_byte}\n")
+
+
+def clamp(x: float, x_min: float, x_max: float) -> float:
+    return max(min(x, x_max), x_min)

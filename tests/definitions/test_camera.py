@@ -1,6 +1,6 @@
 import numpy as np
 from raytracer.definitions.vector import Point, Vector
-from raytracer.main import Camera
+from raytracer.definitions.camera import Camera
 
 
 def test_simple():

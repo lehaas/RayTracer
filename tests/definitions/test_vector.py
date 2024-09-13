@@ -46,3 +46,18 @@ def test_unit_vector(_in: Vector, out: Vector):
     """Test that unit_vector returns a unit vector."""
 
     np.testing.assert_equal(unit_vector(_in), out)
+
+
+@pytest.mark.parametrize("a, b", [(-5.0, -3.0), (0.3, 0.5)])
+def test_random(a: float, b: float):
+    for _ in range(10):
+        v = Vector.random(a, b)
+        assert a <= v.x < b
+        assert a <= v.y < b
+        assert a <= v.z < b
+
+
+def test_random_unit_vector():
+    for _ in range(10):
+        v = Vector.random_unit_vector()
+        np.testing.assert_allclose(v.length(), 1.0)
