@@ -131,9 +131,11 @@ def ray_color(ray: Ray, world: World, *, depth: int) -> Color:
     # to account for floating point inaccuracies, we ignore small rays that hit its origin
     if record := world.hit(ray, 0.0001, math.inf):
         material = record.material
-        scattered = material.scatter(ray, record.normal, record.point)
+        scattered = material.scatter(
+            ray, record.normal, record.point, record.front_facing
+        )
         if scattered:
-            return material.albedo * ray_color(scattered, world, depth=depth - 1)
+            return material.attentuition * ray_color(scattered, world, depth=depth - 1)
         else:
             return Color(Vector([0.0, 0.0, 0.0]))
     v = unit_vector(ray.direction)
